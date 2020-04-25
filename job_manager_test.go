@@ -12,7 +12,7 @@ func TestSimpleJob(t *testing.T) {
 	manager := NewManager()
 
 	jobName := "hello_job"
-	cronExpress := "* * * * * *"
+	cronExpress := "* * * * *"
 
 	start := time.Now()
 	manager.Register(jobName, cronExpress, func() {
@@ -67,7 +67,7 @@ func TestManyJobs(t *testing.T) {
 	manager := NewManager()
 
 	jobName := "hello_job"
-	cronExpress := "* * * * * *"
+	cronExpress := "* * * * *"
 
 	manager.Register(jobName+" 0", cronExpress, func() {
 		log.Println("say hello 0.", time.Now())
@@ -81,6 +81,25 @@ func TestManyJobs(t *testing.T) {
 	manager.Register(jobName+" last", cronExpress, func() {
 		log.Println("say hello once.", time.Now())
 		manager.Quit()
+	})
+	manager.Start()
+}
+
+
+func TestSecondlyJob(t *testing.T) {
+	manager := NewManager()
+
+	jobName := "secondly job"
+	cronExpress := "* * * * * * *"
+
+	start := time.Now()
+	manager.Register(jobName, cronExpress, func() {
+		manager.Quit()
+		log.Println("say hello secondly.", time.Now())
+		now := time.Now()
+		if now.Sub(start).Seconds() >1 {
+			t.Fatal("should less than 2")
+		}
 	})
 	manager.Start()
 }
